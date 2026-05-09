@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "playwright_code_generator": {
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "-m",
+        "src.server"
+      ],
+      "cwd": "/ABSOLUTE/PATH/TO/playwright_code_generator"
+    }
+  }
+}
