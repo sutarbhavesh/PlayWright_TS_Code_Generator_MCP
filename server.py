@@ -53,7 +53,7 @@ async def list_tools() -> list[Tool]:
         Tool(
             name="capture_snapshot",
             description=(
-                "🎯 Capture an accessibility snapshot (aria tree) of any live web page. "
+                "Capture an accessibility snapshot (aria tree) of any live web page. "
                 "Returns a rich snapshot saved as both .html and .md that the agent "
                 "reads to understand the page structure for code generation. "
                 "Use this FIRST before generating any Playwright code."
@@ -85,7 +85,7 @@ async def list_tools() -> list[Tool]:
         Tool(
             name="analyze_snapshot",
             description=(
-                "🔍 Analyze a previously captured snapshot file to extract structured page intelligence: "
+                " Analyze a previously captured snapshot file to extract structured page intelligence: "
                 "form fields, buttons, links, page type detection, and recommended locator strategies. "
                 "Feed the snapshot filename (or raw snapshot text) to get a structured analysis."
             ),
@@ -103,11 +103,11 @@ async def list_tools() -> list[Tool]:
         Tool(
             name="generate_code",
             description=(
-                "⚡ Generate production-ready Playwright TypeScript code from a snapshot. "
+                " Generate production-ready Playwright TypeScript code from a snapshot. "
                 "The agent automatically chooses output style based on complexity:\n"
-                "  • Simple page  → raw test.ts with inline locators\n"
-                "  • Multi-step   → Page Object Model class + test file\n"
-                "  • Complex suite → POM + fixtures + test data helpers\n"
+                "  Simple page  → raw test.ts with inline locators\n"
+                "  Multi-step   → Page Object Model class + test file\n"
+                "  Complex suite → POM + fixtures + test data helpers\n"
                 "Includes best-fit locators, Faker.js data, assertions, waits, and Allure annotations."
             ),
             inputSchema={
@@ -150,7 +150,7 @@ async def list_tools() -> list[Tool]:
         Tool(
             name="clarify_intent",
             description=(
-                "🗣️ Ask the user a clarifying question before generating code. "
+                "Ask the user a clarifying question before generating code. "
                 "Use this when the snapshot reveals ambiguity — multiple forms, unclear flow, "
                 "conditional steps, or missing context. Returns the question to show the user."
             ),
@@ -177,7 +177,7 @@ async def list_tools() -> list[Tool]:
         Tool(
             name="diff_snapshots",
             description=(
-                "📊 Compare two snapshots to detect what changed between page states. "
+                "Compare two snapshots to detect what changed between page states. "
                 "Useful for multi-step flows — capture before and after an action "
                 "to understand what DOM elements appeared, changed, or disappeared."
             ),
@@ -199,7 +199,7 @@ async def list_tools() -> list[Tool]:
         Tool(
             name="save_snapshot",
             description=(
-                "💾 Save raw snapshot text (aria tree or HTML) to disk as .md and .html files. "
+                " Save raw snapshot text (aria tree or HTML) to disk as .md and .html files. "
                 "Use this when you already have snapshot content (e.g. pasted from browser devtools) "
                 "and want to save it for repeated analysis without re-opening the browser."
             ),
@@ -221,7 +221,7 @@ async def list_tools() -> list[Tool]:
         Tool(
             name="list_snapshots",
             description=(
-                "📁 List all saved snapshots in the snapshots directory. "
+                "List all saved snapshots in the snapshots directory. "
                 "Returns filenames, sizes, and creation times."
             ),
             inputSchema={
@@ -254,13 +254,13 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> CallToolResult:
         elif name == "list_snapshots":
             result = await handle_list_snapshots(arguments)
         else:
-            result = f"❌ Unknown tool: {name}"
+            result = f" Unknown tool: {name}"
 
         return CallToolResult(content=[TextContent(type="text", text=result)])
 
     except Exception as e:
         return CallToolResult(
-            content=[TextContent(type="text", text=f"❌ Error in {name}: {str(e)}")],
+            content=[TextContent(type="text", text=f" Error in {name}: {str(e)}")],
             isError=True
         )
 
@@ -310,10 +310,10 @@ async def handle_capture_snapshot(args: dict) -> str:
     html_path.write_text(html,  encoding="utf-8")
 
     result = (
-        f"✅ Snapshot captured for: {url}\n\n"
-        f"📁 Saved files:\n"
-        f"  • {md_path.name}  ({md_path.stat().st_size:,} bytes)\n"
-        f"  • {html_path.name} ({html_path.stat().st_size:,} bytes)\n"
+        f" Snapshot captured for: {url}\n\n"
+        f" Saved files:\n"
+        f"  {md_path.name}  ({md_path.stat().st_size:,} bytes)\n"
+        f"  {html_path.name} ({html_path.stat().st_size:,} bytes)\n"
     )
     if screenshot_path:
         result += f"  • {screenshot_path.name}\n"
@@ -331,11 +331,11 @@ async def handle_analyze_snapshot(args: dict) -> str:
     analysis = _analyze_content(content)
 
     lines = [
-        "## 🔍 Page Analysis\n",
+        "##  Page Analysis\n",
         f"**Page type detected:** {analysis['page_type']}",
         f"**Complexity:** {analysis['complexity']}",
         f"**Recommended output:** {analysis['recommended_output']}\n",
-        "### 📋 Form Fields",
+        "###  Form Fields",
     ]
     if analysis["form_fields"]:
         for f in analysis["form_fields"]:
@@ -343,26 +343,26 @@ async def handle_analyze_snapshot(args: dict) -> str:
     else:
         lines.append("  *(no form fields detected)*")
 
-    lines.append("\n### 🖱️ Actionable Buttons")
+    lines.append("\n###  Actionable Buttons")
     if analysis["buttons"]:
         for b in analysis["buttons"]:
             lines.append(f"  - `{b['locator']}` — \"{b['text']}\"")
     else:
         lines.append("  *(no buttons detected)*")
 
-    lines.append("\n### 🔗 Navigation Links")
+    lines.append("\n###  Navigation Links")
     if analysis["links"]:
         for lnk in analysis["links"][:10]:
             lines.append(f"  - \"{lnk['text']}\"")
     else:
         lines.append("  *(no nav links detected)*")
 
-    lines.append("\n### 💡 Locator Strategy Recommendations")
+    lines.append("\n###  Locator Strategy Recommendations")
     for tip in analysis["locator_tips"]:
         lines.append(f"  - {tip}")
 
     if analysis["clarifications_needed"]:
-        lines.append("\n### ❓ Clarifications Needed")
+        lines.append("\n###  Clarifications Needed")
         for q in analysis["clarifications_needed"]:
             lines.append(f"  - {q}")
 
@@ -401,8 +401,8 @@ async def handle_generate_code(args: dict) -> str:
     out_file.write_text(code, encoding="utf-8")
 
     result = (
-        f"## ⚡ Generated: `{output_style}` ({test_type})\n\n"
-        f"💾 Saved to: `output/{out_file.name}`\n\n"
+        f"##  Generated: `{output_style}` ({test_type})\n\n"
+        f" Saved to: `output/{out_file.name}`\n\n"
         f"```typescript\n{code}\n```"
     )
     return result
@@ -417,7 +417,7 @@ async def handle_clarify_intent(args: dict) -> str:
     context  = args.get("context", "")
     options  = args.get("options", [])
 
-    lines = ["## ❓ Clarification Needed\n"]
+    lines = ["##  Clarification Needed\n"]
     if context:
         lines.append(f"**Context:** {context}\n")
     lines.append(f"**Question:** {question}\n")
@@ -443,7 +443,7 @@ async def handle_diff_snapshots(args: dict) -> str:
     added   = [l for l in after_lines  - before_lines if l.strip()]
     removed = [l for l in before_lines - after_lines  if l.strip()]
 
-    lines = ["## 📊 Snapshot Diff\n"]
+    lines = ["##  Snapshot Diff\n"]
     lines.append(f"**Added elements** ({len(added)}):")
     for l in added[:20]:
         lines.append(f"  + {l.strip()}")
@@ -484,9 +484,9 @@ async def handle_save_snapshot(args: dict) -> str:
     html_path.write_text(html_wrap, encoding="utf-8")
 
     return (
-        f"✅ Snapshot saved as `{slug}`\n"
-        f"  • {md_path}\n"
-        f"  • {html_path}\n\n"
+        f" Snapshot saved as `{slug}`\n"
+        f"   {md_path}\n"
+        f"   {html_path}\n\n"
         f"Use `analyze_snapshot` with `\"{slug}.md\"` to analyse it."
     )
 
@@ -498,9 +498,9 @@ async def handle_save_snapshot(args: dict) -> str:
 async def handle_list_snapshots(_args: dict) -> str:
     files = sorted(SNAPSHOT_DIR.glob("*.md"))
     if not files:
-        return "📁 No snapshots saved yet. Use `capture_snapshot` or `save_snapshot` to create one."
+        return " No snapshots saved yet. Use `capture_snapshot` or `save_snapshot` to create one."
 
-    lines = [f"## 📁 Saved Snapshots ({len(files)} found)\n"]
+    lines = [f"##  Saved Snapshots ({len(files)} found)\n"]
     for f in files:
         stat = f.stat()
         ts   = datetime.datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M")
@@ -611,15 +611,15 @@ def _analyze_content(content: str) -> dict:
 
     # ── Locator tips ───────────────────────────────────────────────────────
     locator_tips = [
-        "✅ getByRole('button', { name: 'Next' }) — BEST — works even if text is in nested <span>",
-        "✅ getByText('Next') — GOOD — finds visible text anywhere on page",
-        "✅ getByLabel('Email') — GOOD — for form inputs with associated label",
-        "✅ getByTestId('next-btn') — GOOD — if data-testid attribute exists",
-        "⚠️  locator('.css-class') — OK — CSS selectors only as fallback",
-        "❌ Never use XPath unless absolutely necessary — brittle and unmaintainable",
+        " getByRole('button', { name: 'Next' }) — BEST — works even if text is in nested <span>",
+        " getByText('Next') — GOOD — finds visible text anywhere on page",
+        " getByLabel('Email') — GOOD — for form inputs with associated label",
+        " getByTestId('next-btn') — GOOD — if data-testid attribute exists",
+        "  locator('.css-class') — OK — CSS selectors only as fallback",
+        " Never use XPath unless absolutely necessary — brittle and unmaintainable",
     ]
     if any(f["type"] == "password" for f in form_fields):
-        locator_tips.append("🔒 Use `page.getByLabel('Password')` — don't use type=password selector")
+        locator_tips.append(" Use `page.getByLabel('Password')` — don't use type=password selector")
 
     # ── Clarifications ─────────────────────────────────────────────────────
     clarifications_needed = []
@@ -671,7 +671,7 @@ test.describe('{_title(pt)} — {test_type.replace("_", " ").title()}', () => {{
 {faker_data}
 
     // ── Navigate ───────────────────────────────────────────────────────────
-    await page.goto('/');   // 🔧 Replace with your actual URL
+    await page.goto('/');   //  Replace with your actual URL
 
     // ── Fill form ──────────────────────────────────────────────────────────
 {fill_actions}
@@ -729,7 +729,7 @@ test.describe('{_title(pt)}', () => {{
 
   test('{instruction}', async ({{ page }}) => {{
     const {pt}Page = new {cls}(page);
-    await {pt}Page.goto();   // 🔧 Replace with your actual URL
+    await {pt}Page.goto();   //  Replace with your actual URL
 
     // ── Test data ────────────────────────────────────────────────────────
 {faker_data}
@@ -803,7 +803,7 @@ type Fixtures = {{ {pt}Page: {cls} }};
 export const test = base.extend<Fixtures>({{
   {pt}Page: async ({{ page }}, use) => {{
     const po = new {cls}(page);
-    await po.goto();   // 🔧 Replace with your actual URL
+    await po.goto();   //  Replace with your actual URL
     await use(po);
   }},
 }});
@@ -833,13 +833,13 @@ test.describe('{_title(pt)} — Full Suite', () => {{
 
     // Verify validation messages appear
     await expect(page.getByRole('alert')).toBeVisible();
-    // 🔧 Add specific validation error assertions here
+    //  Add specific validation error assertions here
   }});
 
   test('should show error for invalid email format', async ({{ {pt}Page }}) => {{
     await {pt}Page.emailField?.fill('not-a-valid-email');
     await {pt}Page.submitButton.click();
-    // 🔧 Assert the specific error message
+    //  Assert the specific error message
   }});
 
 }});
@@ -923,7 +923,7 @@ def _static_value(ftype: str, label: str) -> str:
 
 def _gen_fill_actions(fields: list[dict], use_faker: bool, indent: int = 4) -> str:
     if not fields:
-        return " " * indent + "// 🔧 No form fields detected — add fill actions manually"
+        return " " * indent + "//  No form fields detected — add fill actions manually"
     pad  = " " * indent
     lines = []
     for f in fields:
@@ -941,7 +941,7 @@ def _gen_fill_actions(fields: list[dict], use_faker: bool, indent: int = 4) -> s
 def _gen_button_action(buttons: list[dict], indent: int = 4) -> str:
     pad = " " * indent
     if not buttons:
-        return f"{pad}// 🔧 No submit button detected — add click action manually"
+        return f"{pad}//  No submit button detected — add click action manually"
     # Pick the most likely submit button (last one, or 'submit'-named)
     btn = next((b for b in buttons if b["text"].lower() in ["register","submit","login","save","checkout"]), buttons[-1])
     return (
@@ -954,7 +954,7 @@ def _gen_assertions(page_type: str, analysis: dict, indent: int = 4) -> str:
     lines = [f"\n{pad}// ── Assertions ────────────────────────────────────────────────────────"]
     if page_type == "registration":
         lines += [
-            f"{pad}// 🔧 Adjust URL pattern or success message to match your app",
+            f"{pad}// Adjust URL pattern or success message to match your app",
             f"{pad}await expect(page).toHaveURL(/success|confirm|dashboard/i);",
             f"{pad}// OR: await expect(page.getByText('Registration successful')).toBeVisible();",
         ]
@@ -971,7 +971,7 @@ def _gen_assertions(page_type: str, analysis: dict, indent: int = 4) -> str:
     else:
         lines += [
             f"{pad}await expect(page).not.toHaveURL(/error|404/i);",
-            f"{pad}// 🔧 Add specific success assertions here",
+            f"{pad}//  Add specific success assertions here",
         ]
     lines.append("")
     return "\n".join(lines)
@@ -1014,7 +1014,7 @@ def _gen_pom_methods(fields: list[dict], buttons: list[dict]) -> str:
 
     method_lines.append(
         "  async fillForm(formData: Record<string, string>) {\n"
-        + "\n".join(fill_body or ["    // 🔧 No fields detected"])
+        + "\n".join(fill_body or ["    //  No fields detected"])
         + "\n  }\n"
     )
 
@@ -1086,7 +1086,7 @@ def _mock_snapshot(url: str, label: str) -> str:
 **URL:** {url}
 **Label:** {label}
 
-> ⚠️  Playwright is not installed. Install it with:
+>   Playwright is not installed. Install it with:
 >     pip install playwright && playwright install chromium
 >
 > This is a mock snapshot for testing the MCP server tooling.
@@ -1122,7 +1122,7 @@ def _mock_snapshot(url: str, label: str) -> str:
     md_path = SNAPSHOT_DIR / f"{label}.md"
     md_path.write_text(mock, encoding="utf-8")
     return (
-        f"⚠️  Playwright not installed — returning MOCK snapshot.\n\n"
+        f"  Playwright not installed — returning MOCK snapshot.\n\n"
         f"Install with: `pip install playwright && playwright install chromium`\n\n"
         f"Saved mock to: `snapshots/{label}.md`\n\n---\n\n{mock}"
     )
